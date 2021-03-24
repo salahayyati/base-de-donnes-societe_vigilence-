@@ -1,0 +1,32 @@
+2) 
+SELECT b.code_bien , count(*) from bien_immobilier b inner join quartier q on q.code_quartier = b.code_quartier inner join ville v on v.code_ville = q.code_ville 
+group by b.code_bien
+3)
+ select b.code_bien , count(*) from bien_immobilier b inner join contrat c on c.code_bien = b.code_bien 
+group by b.code_bien
+having count(*) = ( select count(*) from contrat c 
+group by c.code_bien 
+order by count(*)  
+limit 1)
+4)
+ select s.nom_syndic from syndic s 
+inner join contrat c on c.code_syndique = s.code_syndique 
+inner join bien_immobilier b on c.code_bien = b.code_bien
+ where s.nom_syndic not in (select s.nom_syndic from syndic s 
+ inner join contrat c on c.code_syndique = s.code_syndique 
+ inner join bien_immobilier b on c.code_bien = b.code_bien 
+ inner join quartier q on q.code_quartier =b.code_quartier 
+ inner join ville v on v.code_ville = q.code_ville 
+ inner join region r on r.code_region = v.code code_region 
+where r.nom_region = "oriental")
+
+5)
+ select b.code_bien, sum(prix_mensuel*12) from bien_immobilier b inner join contrat c on b.code_bien = c.code_bien 
+group by b.code_bien
+having sum(prix_mensuel) = (
+select  sum(prix_mensuel*12) from bien_immobilier b inner join contrat c on b.code_bien = c.code_bien 
+group by b.code_bien
+order by sum(prix_mensuel*12) limit 1 )
+6)
+ select date_construction from bien_immobilier 
+where b.date_construction = (select min(date_construction) from bien_immobilier)
